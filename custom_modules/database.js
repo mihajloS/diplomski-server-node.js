@@ -23,6 +23,7 @@ function init(ss) {
 function handleSocketCalls(ss) {
 	socketServer = ss;
 	socketServer.on('connection', function(socket) {
+		console.log('SOD', socket.id);
 		m.traceText('Socket new connection');
 		socket.on('login', function(data, cb) {
 			console.log('!on login request');

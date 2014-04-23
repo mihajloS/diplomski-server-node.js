@@ -27,7 +27,7 @@ var io             = require('socket.io');
 var easyrtc        = require('easyrtc');
 var path           = require('path');
 var MemoryStore    = require('connect').session.MemoryStore;
-var sesSoc = require('session.socket.io');
+//var sesSoc = require('session.socket.io');
 
 
 var CONSTS = configuration.get();
@@ -36,15 +36,15 @@ var mystore = new MemoryStore;
 /**
  * Initial configuration of server
  */
-app.configure(function() {
+///*app.configure(function() {
 	app.use(express.static(__dirname + "/static/"));
 	app.set('view engine', 'html');
 	app.set('views', 'static');
 	app.use(express.static(path.join(__dirname, 'public')));
 	
 	//
-	app.use(express.cookieParser());
-	app.use(express.session({ store: mystore, secret: 'asdasdasdewds' }));
+	//app.use(express.cookieParser());
+	//app.use(express.session({ store: mystore, secret: 'asdasdasdewds' }));
 	app.get('/', function(req, res){
 		res.send('Hello World!');
 	});
@@ -53,7 +53,7 @@ app.configure(function() {
 	app.engine('html', engines.mustache);
 	app.set('case sensitive routes', false);
 	app.set('strict routing', false);
-});
+//});*/
 
 
 /**
@@ -84,7 +84,7 @@ var webServer = http.createServer(app).listen(CONSTS.SERVER_PORT, function() {
  * Create socket
  */
 var socketServer = io.listen(webServer, { "log level": 1 });
-var sessionSockets = new sesSoc(io, mystore, connect.cookieParser());
+//var sessionSockets = new sesSoc(io, mystore, connect.cookieParser());
 
 /**
  * Setup socket and cookieParser
@@ -110,7 +110,7 @@ var sessionSockets = new sesSoc(io, mystore, connect.cookieParser());
 /**
  * Connecting to database
  */
-mysql.init(sessionSockets);
+mysql.init(socketServer);
 
 /**
  * Start easy rtc
