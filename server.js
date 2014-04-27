@@ -17,6 +17,7 @@
 var configuration  = require('./custom_modules/configuration');
 var m              = require('./custom_modules/helpers');
 var mysql          = require('./custom_modules/database');
+var SES            = require('./custom_modules/session_m');
 //native modules
 var connect        = require('connect');
 var cookie         = require('cookie');
@@ -28,6 +29,8 @@ var easyrtc        = require('easyrtc');
 var path           = require('path');
 var MemoryStore    = require('connect').session.MemoryStore;
 //var sesSoc = require('session.socket.io');
+var session        = require('express-session');
+var cookieParser = require('cookie-parser');
 
 
 var CONSTS = configuration.get();
@@ -43,8 +46,8 @@ var mystore = new MemoryStore;
 	app.use(express.static(path.join(__dirname, 'public')));
 	
 	//
-	//app.use(express.cookieParser());
-	//app.use(express.session({ store: mystore, secret: 'asdasdasdewds' }));
+	app.use(cookieParser());
+	app.use(session({ store: mystore, secret: 'mijajlo' }));
 	app.get('/', function(req, res){
 		res.send('Hello World!');
 	});
@@ -110,7 +113,7 @@ var socketServer = io.listen(webServer, { "log level": 1 });
 /**
  * Connecting to database
  */
-mysql.init(socketServer);
+mysql.init(socketServer, SES);
 
 /**
  * Start easy rtc

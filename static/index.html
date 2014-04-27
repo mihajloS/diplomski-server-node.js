@@ -23,7 +23,7 @@ $(document).ready(function () {
 });
 </script>
 </head>
-<body>
+<body onLoad="initSocketObject();">
 <div class="main">
   <div class="main_resize">
     <div class="header">
@@ -39,9 +39,10 @@ $(document).ready(function () {
         </ul>
       </div>
       <div>
-       <input type="text" id="tb_email" value="" placeholder="Email" />
-       <input type="password" value="" id="tb_password" placeholder="Password" />
-       <input type="button" id="btn_login" value="Log In" onClick="onLoginClick()" />
+       <input type="text" style='display:none;' id="tb_email" value="" placeholder="Email" />
+       <input type="password" style='display:none;' value="" id="tb_password" placeholder="Password" />
+       <input type="button" style='display:none;' id="btn_login" value="Log In" onClick="onLoginClick()" />
+       <input type="button" style='display:none;' id="btn_logout" value="Log out" onClick="onLogoutClick();" />
       </div>
       <div class="clr"></div>
     </div>

@@ -1,6 +1,8 @@
 //custom modules
 var m              = require('./helpers');
 var configuration  = require('./configuration');
+var cookie    = require('cookie');
+var cookieParser = require('cookie-parser')
 //native modules
 var mysql   = require('mysql');
 
@@ -8,9 +10,11 @@ var mysql   = require('mysql');
 var CONSTS = configuration.get();
 var connection;
 var socketServer;
-var sessionSockets;
+var myStore;
+var SES;
 
-function init(ss) {
+function init(ss, s) {
+	SES = s;
 	connection = mysql.createConnection({
 		user     : CONSTS.DATABASE_USER,
 		password : CONSTS.DATABASE_PASS,
@@ -23,12 +27,19 @@ function init(ss) {
 function handleSocketCalls(ss) {
 	socketServer = ss;
 	socketServer.on('connection', function(socket) {
-		console.log('SOD', socket.id);
+		var stat = SES.checkSession(socket);
+		console.log('SOCKET STAT', stat);
+		socket.emit('sess', stat);
 		m.traceText('Socket new connection');
 		socket.on('login', function(data, cb) {
-			console.log('!on login request');
 			logIn(socket, data, cb);
 		});
+		socket.on('logout', function() {
+			logOut(socket);
+		})
+		socket.on('disconnect', function(s) {
+			console.log('disc', socket.id);
+		})
 	});
 }
 
@@ -57,6 +68,8 @@ function logIn (socket, data, cb) {
 			return;
 		}
 		if (rows.length===1) {
+			SES.buildSession(socket);
+			SES.setConnection(socket, true, rows);
 			cb({}, rows);
 		}
 		else if(rows.length < 1){
@@ -66,6 +79,10 @@ function logIn (socket, data, cb) {
 			cb( {error: "Server missmatch"}, rows);
 		}
 	});
+}
+
+function logOut(socket) {
+	SES.kill(socket);
 }
 
 
