@@ -4,29 +4,36 @@
 <title>CleanInterface | About</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="style.css" rel="stylesheet" type="text/css" />
-
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<script type="text/javascript" src="js/noty/packaged/jquery.noty.packaged.min.js"></script> 
+<script type="text/javascript" src="js/Event/Events.js"></script>
 <script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="js/Template/template.js"></script>
 <script type="text/javascript" src="js/easyrtc/easyrtc.js"></script>
 <script type="text/javascript" src="js/About/About.js"></script>
 
 </head>
-<body onLoad='my_init();'>
+<body onLoad='MTemplate.initSocketObject();'>
 <div class="main">
 	<div class="main_resize">
 		<div class="header">
 			<div class="logo"><a href="#"><img src="images/logo.gif" width="232" height="74" border="0" alt="" /></a></div>
 			<div class="clr"></div>
 			<div class="menu">
-				<ul>
-					<li><a href="index.html"><span>Home</span></a></li>
+				<ul id="navigation_box">
+					<!-- <li><a href="index.html"><span>Home</span></a></li>
 					<li><a href="services.html" ><span>Services</span></a></li>
 					<li><a href="#"><span>Portfolio</span></a></li>
-					<li><a href="about.html" class="active"><span> About Us </span></a></li>
-					<li><a href="contact.html"><span> Contact Us</span></a></li>
+					<li><a href="about.html"><span> About Us </span></a></li>
+					<li><a href="contact.html"><span> Contact Us</span></a></li> -->
 				</ul>
 			</div>
-			<div class="click">
-				<p>Click here to live Support Tell Free 1-866-123-675</p>
+			<div >
+				<p id="title_welcome" style="display:none;">Welcome #USER#</p>
+				<input type="text" style='display:none;' id="tb_email" value="" placeholder="Email" />
+				<input type="password" style='display:none;' value="" id="tb_password" placeholder="Password" />
+				<input type="button" style='display:none;' id="btn_login" value="Log In" onClick="MTemplate.onLoginClick()" />
+				<input type="button" style='display:none;' id="btn_logout" value="Log out" onClick="MTemplate.onLogoutClick();" />
 			</div>
 			<div class="clr"></div>
 		</div>
@@ -34,55 +41,49 @@
 		<h3>About Us</h3>
 		<div class="main_left">
 			<div class="search">
-				<form id="form1" name="form1" method="post" action="#">
+				<form id="form1" name="form1" >
 					<p>Search: </p>
 					<label> <span>
-						<input name="q" type="text" class="keywords" id="textfield" maxlength="50" value="" />
+						<input name="q" type="text" class="keywords" id="tbSearch_connection" maxlength="50" value="" />
 						</span>
 						<input name="b" type="image" src="images/search.gif" class="button" />
 					</label>
 				</form>
 				<div class="clr"></div>
 			</div>
-			<h2>What They Say</h2>
-			<img src="images/test.gif" alt="" width="18" height="17" class="floated" />
+			<h2 class = "av">People connected now:</h2>
+			<div id="otherClients" style="height:100%; owerflow:scroll;"></div>
+			<!-- <img src="images/test.gif" alt="" width="18" height="17" class="floated" />
 			<p>&quot;Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse voluptas nulla pariatur?&quot;</p>
 			<p><em><strong>by: John S., webdesigner</strong></em></p>
 			<p>&nbsp;</p>
 			<p><img src="images/test.gif" alt="" width="18" height="17" class="floated" /> </p>
 			<p>&quot;Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse voluptas nulla pariatur?&quot;</p>
-			<p><em><strong>by: John S., webdesigner</strong></em></p>
+			<p><em><strong>by: John S., webdesigner</strong></em></p> -->
 		</div>
 		<div class="main_right">
 			<div class="right_text">
 				<p><strong>Latest News:</strong> Dipisicing elit, sed do eiusmod tempor incididunt ut labore et?</p>
 			</div>
 			<div class="clr"></div>
-			<h2>Audio - Video communication<br />
-				<span> No word is better than example, so hit a <b>free</b> tour with <b>RTC</b> </span> </h2>
-				<video  style="float:left" id="self" width="300" height="200" muted="muted"></video>
-				<div style="position:relative;float:left;width:300px">
-						<video id="caller" width="300" height="200"></video>
-						<div id="otherClients"></div>
-				</div>
-				<div style="clear:both;"></div>
-			<!-- <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium mque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
-			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. <br />
-				Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip exea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p> -->
-			<p>&nbsp;</p>
-			<h2 class="grey">Our Mission</h2>
-			<p> <em>Sed tincidunt turpis posuere neque dictum quis faucibus felis tempus. Ut faucibus sem a nisi feugiat volutpat. Vivamus quis vulputate mauris. In suscipit sollicitudin mattis. Integer non nisl eu metus dapibus dapibus. <br />
-				Maecenas dui urna, luctus ac posuere at, semper vel lectus. Praesent laoreet ornare odio id porta. Aenean quis leo justo, sit amet varius purus. Ras vitae enim nulla. Aenean tristique eros in mauris porta id suscipit libero scelerisque. </em></p>
-			<p>Sollicitudin vel sollicitudin qui facilisis non massaNam id jus nisl ullamcorper laoreet nec ut diam. <br />
-				Nam eget nisi dui, vita hendrerit risus. Nunc non mas neque, at rhoncus nulla.Vivamus in metus nisi, ut gravida dolor. Pellentesque fermentum aliquam interdum. <br />
-				Mauris ligula dui, gravida nec tempus mollis, tempor at odio. Ut porttitor, orci sagittis pretium varius, felis sapien pharetra eros, quis fermentum dui ligula eget justo. </p>
-			<h2>Our Philosophy</h2>
-			<p><a href="#" style="text-decoration:underline;">Aenean quis leo justo, sit amet varius purus. Ras vitae enim nulla. Aenean tristique eros in mauris porta id suscipit libero scelerisque. </a></p>
-			<p>Sollicitudin vel sollicitudin qui facilisis non massaNam id jus nisl ullamcorper laoreet nec ut diam. <br />
-				Nam eget nisi dui, vita hendrerit risus. Nunc non mas neque, at rhoncus nulla.<br />
-				Vivamus in metus nisi, ut gravida dolor. Pellentesque fermentum aliquam interdum. <br />
-				Mauris ligula dui, gravida nec tempus mollis, tempor at odio. Ut porttitor, orci sagittis pretium varius, felis sapien pharetra eros, quis fermentum dui ligula eget justo. </p>
-			<p>&nbsp;</p>
+			<h2>Audio - Video communication <input type="button" value="test me" onClick="my_init();" /><br />
+				<span class="av"> No word is better than example, so hit a <b>free</b> tour with <b>RTC</b> </span>
+			</h2>
+			<video class="av"  style="float:left" id="self" width="300" height="200" muted="muted"></video>
+			<div class="av" style="position:relative;float:left;width:300px">
+					<video id="caller" width="300" height="200"></video>
+			</div>
+			<div style="clear:both;"></div>
+			<h2 class="grey">Quick READ ME tutorial</h2>
+			<p> 
+				<em>There is not much good from empty talk so let's cut to the case. <br /></em>
+			</p>
+			<p>
+				First make sure you are using<a href="https://www.google.com/intl/sr/chrome/browser/" target="_bank"> chrome </a>or<a target="_bank" href="http://www.mozilla.org/en-US/firefox/new/"> mozilla firefox </a>browser<br />
+				Now you go click that little <b>test me</b> button and at the top of your favourite, (of two mentioned browsers) allow us to access your audio and video devices<br />
+				You will soon see your own video. If not please do a little research hot to re-allow acces to your audio or video in browser. Afer these few easy steps you are good to go, to pass out this link to who 
+				<br /> ever you want. When that special someone joins this link, just click on button appeared in list and see the magic
+			</p>
 			<p>&nbsp;</p>
 			<p>&nbsp;</p>
 			<p>&nbsp;</p>

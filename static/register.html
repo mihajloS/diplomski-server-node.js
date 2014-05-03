@@ -4,79 +4,70 @@
 <title>CleanInterface | Contact</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="style.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<script type="text/javascript" src="js/noty/packaged/jquery.noty.packaged.min.js"></script> 
+<script type="text/javascript" src="js/Event/Events.js"></script>
+<script type="text/javascript" src="js/Register/Register.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="js/Template/template.js"></script>
 </head>
-<body>
+<body onLoad="MTemplate.initSocketObject();">
 <div class="main">
   <div class="main_resize">
 	<div class="header">
 	  <div class="logo"><a href="#"><img src="images/logo.gif" width="232" height="74" border="0" alt="" /></a></div>
 	  <div class="clr"></div>
 	  <div class="menu">
-		<ul>
-		  <li><a href="index.html"><span>Home</span></a></li>
-		  <li><a href="services.html" ><span>Services</span></a></li>
-		  <li><a href="#"><span>Portfolio</span></a></li>
-		  <li><a href="about.html"><span> About Us </span></a></li>
-		  <li><a href="contact.html" class="active"><span> Contact Us</span></a></li>
+		<ul id="navigation_box">
+			<!-- <li><a href="index.html"><span>Home</span></a></li>
+			<li><a href="services.html" ><span>Services</span></a></li>
+			<li><a href="#"><span>Portfolio</span></a></li>
+			<li><a href="about.html"><span> About Us </span></a></li>
+			<li><a href="contact.html"><span> Contact Us</span></a></li> -->
 		</ul>
 	  </div>
-	  <div class="click">
-		<p>Click here to live Support Tell Free 1-866-123-675</p>
+	  <div>
+		<p id="title_welcome" style="display:none;">Welcome #USER#</p>
+		<input type="text" style='display:none;' id="tb_email" value="" placeholder="Email" />
+		<input type="password" style='display:none;' value="" id="tb_password" placeholder="Password" />
+		<input type="button" style='display:none;' id="btn_login" value="Log In"  onClick= "MTemplate.onLoginClick();" />
+		<input type="button" style='display:none;' id="btn_logout" value="Log out" onClick="MTemplate.onLogoutClick();" />
 	  </div>
 	  <div class="clr"></div>
 	</div>
 	<div class="clr"></div>
-	<h3>Contact Us</h3>
-	<div class="main_left">
-	  <div class="search">
-		<form id="form1" name="form1" method="post" action="#">
-		  <p>Search: </p>
-		  <label> <span>
-			<input name="q" type="text" class="keywords" id="textfield" maxlength="50" value="" />
-			</span>
-			<input name="b" type="image" src="images/search.gif" class="button" />
-		  </label>
-		</form>
-		<div class="clr"></div>
-	  </div>
-	  <h2>Contact Information<br />
-		<span> Lorem ipsum dolor sit amet, consectetur </span></h2>
-	  <p><strong>Tel</strong>: +44 (0) 1234 6765<br />
-		<strong>Fax</strong>: +44 (0) 1234 6765<br />
-		<strong>Email</strong>: mail@mail.com<br />
-		<strong>Skype</strong>: 888 888 888 888</p>
-	  <h2>Some Text Here</h2>
-	  <p>Morbi interdum mollis sapien. Sed ac risus. Phasellus lacinia, magna a ullamcorper laoreet, lectus arcu pulvinar risus, vitae facilisis libero dolor a purus. Sed vel lacus. </p>
-	</div>
-	<div class="main_right">
+	<h3 id="message_top_register">Register</center></h3>
+	<div id="register_success_message" style="display:none;"><center><h3 style='padding-right:50px; padding-left:50px;text-align:center;'>Registration success. Check your email to finish registration</h3></center></div>
+	<div class="">
 	  <div class="clr"></div>
 	  <div class="right_text">
 		<p><strong>Latest News:</strong> Dipisicing elit, sed do eiusmod tempor incididunt ut labore et?</p>
 	  </div>
 	  <div class="clr"></div>
-	  <h2>Registration form<br />
+	  <h2 class="hideMe">Registration form<br />
 		<span> Join us today and feel joy of real Web RTC audio video communicaton </span> </h2>
-	  <p>Registration is free! </p>
-	  <form action="#" method="post" id="contactform">
+	  <p class="hideMe">Registration is free! </p>
+	  <form  id="contactform" class="hideMe">
 		<ol>
 		  <li>
 			<label for="email">Your email <span class="red">*</span></label>
-			<input id="_email" name="_email" class="text" />
+			<input id="tbREG_email" name="tbREG_email" class="text" />
 		  </li>
 		  <li>
-			<label for="company">Nickname (visible)</label>
+			<label for="company">Nickname (visible)<span class="red">*</span></label>
 			<input id="tb_nickname" name="tb_nickname" class="text" />
 		  </li>
 		  <li>
-			<label for="subject">Password </label>
-			<input id="tb_password" name="tb_password" class="text" />
+			<label for="subject">Password <span class="red">*</span></label>
+			<input type="password" id="tbREG_password" name="tbREG_password" class="text" />
 		  </li>
 		  <li>
-			<label for="subject">Password again </label>
-			<input id="tb_password_again" name="tb_password_again" class="text" />
+			<label for="subject">Password again <span class="red">*</span></label>
+			<input type="password" id="tb_password_again" name="tb_password_again" class="text" />
 		  </li>
 		  <li class="buttons">
-			<input type="image" name="imageField" id="imageField" src="images/send.gif" class="send" />
+		  	<input type="button" class="btnSend" id="btnRegister" onclick="registerClick();"/>
+			<!-- <input type="image" name="imageField" id="imageField" src="images/send.gif" class="send" /> -->
 			<div class="clr"></div>
 		  </li>
 		</ol>

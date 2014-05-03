@@ -1,5 +1,10 @@
-var m      = require('./helpers');
+//custom modules
+var m             = require('./helpers');
+var configuration = require('./configuration');
+//native modules
 var cookie = require('cookie');
+
+var CONSTS = configuration.get();
 
 var _sessions = {};
 
@@ -38,7 +43,7 @@ function checkSession (socket) {
 		buildSessionTemplate(socket);
 	_sessions[sid].sockets[soid] = socket;
 	_sessions[sid].cookies = parsed_cookies;
-	return buildCheckMessage('ok', _sessions[sid].connected);
+	return createSessionResponceObj(_sessions[sid]);
 }
 
 function setConnection(socket, connected, data) {
@@ -71,6 +76,13 @@ function getSIDFromSocket (s) {
 	return parsed_cookies['connect.sid'];
 }
 
+function getSessionForSocket (s) {
+	var sid = getSIDFromSocket(s);
+	if (sid in _sessions)
+		return _sessions[sid];
+	return null;
+}
+
 function removeSocketFromSession(socket) {
 	var sid = getSIDFromSocket(socket);
 	if (!(sid in _sessions)) return;
@@ -89,12 +101,29 @@ function buildSessionTemplate(socket) {
 	};
 }
 
-exports.removeSesssionBySID = removeSesssionBySID;
-exports.getSessions         = getSessions;
-exports.getSessionBySID     = getSessionBySID;
-exports.checkSession        = checkSession;
-exports.getConnection       = getConnection;
-exports.setConnection       = setConnection;
-exports.getSIDFromSocket    = getSIDFromSocket;
-exports.kill                = kill;
-exports.buildSession        = buildSessionTemplate;
+function getUserType(socket) {
+	var sid = getSIDFromSocket(socket);
+	if (!(sid in _sessions)) return CONSTS.USER_TYPE_UNKNOWN;
+	if (!('connected' in _sessions[sid])) return CONSTS.USER_TYPE_UNKNOWN;
+	if (_sessions[sid].connected===false)
+		return CONSTS.USER_TYPE_UNKNOWN;
+	return _sessions[sid].user_data.type_id.toString();
+}
+
+function createSessionResponceObj (session) {
+	if (session===null) return { loggedin : false, data : null };
+	return { loggedin : session.connected, data : session.user_data };
+}
+
+exports.removeSesssionBySID      = removeSesssionBySID;
+exports.getSessions              = getSessions;
+exports.getSessionBySID          = getSessionBySID;
+exports.checkSession             = checkSession;
+exports.getConnection            = getConnection;
+exports.setConnection            = setConnection;
+exports.getSIDFromSocket         = getSIDFromSocket;
+exports.kill                     = kill;
+exports.buildSession             = buildSessionTemplate;
+exports.getUserType              = getUserType;
+exports.getSessionForSocket      = getSessionForSocket;
+exports.createSessionResponceObj = createSessionResponceObj;

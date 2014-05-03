@@ -4,8 +4,11 @@
 <title>CleanInterface</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <link href="style.css" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<script type="text/javascript" src="js/noty/packaged/jquery.noty.packaged.min.js"></script> 
 <script type="text/javascript" src="js/jquery.cycle.all.min.js"></script>
+<script type="text/javascript" src="js/Event/Events.js"></script>
+<script type="text/javascript" src="js/Index/Index.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript" src="js/Template/template.js"></script>
 <script type="text/javascript">
@@ -23,26 +26,27 @@ $(document).ready(function () {
 });
 </script>
 </head>
-<body onLoad="initSocketObject();">
+<body onLoad="MTemplate.initSocketObject();">
 <div class="main">
   <div class="main_resize">
     <div class="header">
       <div class="logo"><a href="#"><img src="images/logo.gif" width="232" height="74" border="0" alt="" /></a></div>
       <div class="clr"></div>
       <div class="menu">
-        <ul>
-          <li><a href="index.html" class="active"><span>Home</span></a></li>
+        <ul id="navigation_box">
+          <!-- <li><a href="index.html" class="active"><span>Home</span></a></li>
           <li><a href="services.html"><span>Services</span></a></li>
           <li><a href="#"><span>Portfolio</span></a></li>
           <li><a href="about.html"><span> About Us </span></a></li>
-          <li><a href="contact.html"><span> Contact Us</span></a></li>
+          <li><a href="contact.html"><span> Contact Us</span></a></li> -->
         </ul>
       </div>
-      <div>
-       <input type="text" style='display:none;' id="tb_email" value="" placeholder="Email" />
-       <input type="password" style='display:none;' value="" id="tb_password" placeholder="Password" />
-       <input type="button" style='display:none;' id="btn_login" value="Log In" onClick="onLoginClick()" />
-       <input type="button" style='display:none;' id="btn_logout" value="Log out" onClick="onLogoutClick();" />
+     <div >
+        <p id="title_welcome" style="display:none;">Welcome #USER#</p>
+        <input type="text" style='display:none;' id="tb_email" value="" placeholder="Email" />
+        <input type="password" style='display:none;' value="" id="tb_password" placeholder="Password" />
+        <input type="button" style='display:none;' id="btn_login" value="Log In" onClick="MTemplate.onLoginClick()" />
+        <input type="button" style='display:none;' id="btn_logout" value="Log out" onClick="MTemplate.onLogoutClick();" />
       </div>
       <div class="clr"></div>
     </div>
@@ -52,7 +56,7 @@ $(document).ready(function () {
         <h2>We'll make sure your <br />
           website works for you...</h2>
         <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. </p>
-        <a href="register.html">Register now<!-- <img src="images/view_port.gif" alt="" width="136" height="33" border="0" /> --></a></div>
+        <a href="register.html" id="register_link">Register now<!-- <img src="images/view_port.gif" alt="" width="136" height="33" border="0" /> --></a></div>
       <div id="slider">
         <!-- start slideshow -->
         <div id="slideshow">

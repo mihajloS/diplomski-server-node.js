@@ -88,3 +88,6 @@ li.bg, .bg {  clear:both; border-top:1px solid #f2f2f2; width:100%; padding:0; m
 #slider_controls ul li a:focus { outline: none; }
 #slider_controls ul li a:hover,
 #slider_controls ul li a.activeSlide { background:url('images/tabs_1.gif') no-repeat center center; }
+/*************mihajlo**********/
+.btnSend{ background-image: url('images/send.gif'); background-repeat: no-repeat; width: 81px; height: 32px; padding: 0; margin: 0;}
+input.btnSend:hover { cursor: pointer; cursor: hand; }
