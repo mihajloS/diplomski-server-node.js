@@ -13,6 +13,24 @@ function events_listener_nav (data) {
 
 	var nav_list  = document.getElementById('navigation_box');
 	nav_list.innerHTML = nav_string;
+
+	//check for register finish
+	var getUrlParameters =  function () {
+		var sPageURL = window.location.search.substring(1);
+		var sURLVariables = sPageURL.split('&');
+		var ret = {};
+		for (var i = 0; i < sURLVariables.length; i++) {
+			var sParameterName = sURLVariables[i].split('=');
+			ret[sParameterName[0]] = sParameterName[1];
+		}
+		return ret;
+	};
+
+	var params = getUrlParameters();
+
+	if (('token' in params) && ('uid' in params)) {
+		MTemplate.sendRequest('finish_registration', params, onRegistrationFinishCallback)
+	}
 }
 
 function events_listener_login (data) {
@@ -94,6 +112,10 @@ function onRegisterCallback(data) {
 		$('.main_right').css('display', 'none');
 		$('#message_top_register').css('display', 'none');
 	}
+}
+
+function onRegistrationFinishCallback (data) {
+	console.log('register finish call', data);
 }
 
 function validateEmail(email) {

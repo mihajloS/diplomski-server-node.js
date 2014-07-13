@@ -52,6 +52,9 @@ function handleSocketCalls(ss) {
 		socket.on('register_new_user', function(data, cb) {
 			registerNewUser(socket, data, cb);
 		});
+		socket.on('finish_registration', function (data, cb) {
+			registerFinish(socket, data, cb);
+		});
 		socket.on('sendContactData', function  (data, cb) {
 			sendContactData(socket, data, cb);
 		});
@@ -113,10 +116,10 @@ function registerNewUser(socket, data, cb) {
 			m.errorResponce(null, cb, 'Registration check error');
 		else {
 			if (rows.length===0) {
+				var register_token_time = m.getUnixTimeStamp()
 				query = 'INSERT INTO users (password, email, nickname, confirmed, reg_date) ' +
 						'VALUES ("' + data.pass + '","' + data.email + '", "' + data.nickname +
-						'", "' + CONSTS.USER_NON_CONFIRMED + '", "' + m.getUnixTimeStamp() + '")';
-						console.log(query);
+						'", "' + CONSTS.USER_NON_CONFIRMED + '", "' + register_token_time + '")';
 				connection.query(query, function(err, rows, fields) {
 					if (err)
 						m.errorResponce(null, cb, 'Registration error level 0');
@@ -128,8 +131,11 @@ function registerNewUser(socket, data, cb) {
 								m.errorResponce(null, cb, 'Registration error level 1');
 							else {
 								m.successResponce(null, cb, 'Registation success');
-								if (!CONSTS.DEVELOPMENT)
-									mail.sendMailAuthentication (data.email);
+								if (!CONSTS.DEVELOPMENT) {
+									var url_for_user = "http://" + CONSTS.SERVER_IP + ":" + CONSTS.SERVER_PORT + "/" +
+										CONSTS.MAIL_REGISTER_PAGE + "?token=" + register_token_time + "&uid=" +  last_id;
+									mail.sendMailAuthentication (data.email, url_for_user);
+								}
 							}
 
 						});
@@ -141,6 +147,42 @@ function registerNewUser(socket, data, cb) {
 			}
 		}
 	})
+}
+
+function registerFinish (socket, data, cb) {
+	if (!('token' in data) || !('uid' in data)) {
+		m.errorResponce(null, cb, 'Bad finish register params.');
+		return;
+	}
+	if (data.token===null || data.uid===null) {
+		m.errorResponce(null, cb, 'Bad finish register params.');
+		return;
+	}
+	var query = 'SELECT * FROM users WHERE reg_date = "' + data.token + '" AND user_id = "' + data.uid + '"';
+
+	connection.query(query, function(err, rows, fields) {
+		if (err) {
+			console.log(err);
+			m.errorResponce(null, cb, 'Server error: Bad request for register finish level 0.');
+			return;
+		}
+		if (rows.length!==1) {
+			console.log(rows);
+			m.errorResponce(null, cb, 'Server error: Bad request for register finish level 0.2.');
+			return;
+		}
+		else {
+			query = 'UPDATE users SET confirmed = "' + CONSTS.USER_CONFIRMED + '" WHERE user_id = "' + data.uid + '"';
+			connection.query(query, function(err, rows, fields) {
+				if (err)
+					m.errorResponce(null, cb, 'Server error: Sql register finish error level 1.');
+				else {
+					m.successResponce(null, cb, 'Registration complete success!');
+				}
+			});
+		}
+
+	});
 }
 
 function sendContactData (socket, data , cb) {
@@ -163,7 +205,6 @@ function sendContactData (socket, data , cb) {
 		else {
 			m.successResponce(null, cb, 'Message sent with success.');
 		}
-
 	});
 
 }

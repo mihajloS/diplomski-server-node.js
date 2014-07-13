@@ -16,7 +16,7 @@ var smtpTransport = nodemailer.createTransport(CONSTS.MAIL_PROTOCOL,{
 	}
 });
 
-function sendMailAuthentication (receiver) {
+function sendMailAuthentication (receiver, url) {
 	//fix me, create registration confirm page and proper email
 	var plainText = 'Registration email';
 	var htmlText  = "<h1>Registraion email</h1>";
@@ -24,8 +24,8 @@ function sendMailAuthentication (receiver) {
 		from    : CONSTS.MAIL_FROM + '<' + CONSTS.MAIL_USER + '>',
 		to      : receiver,
 		subject : CONSTS.MAIL_SUBJECT_REGISTER,
-		text    : plainText,
-		html    : htmlText
+		text    : 'Hi from Clean Interfaces, please confirm you registration by going on this link: ' + url,
+		html    : '<h1>Hi from <i>Clean Interfaces</i></h1></br><p>Please confirm your registration by clicking on<a href="' + url + '"> linked area</a></p>'
 	};
 
 	smtpTransport.sendMail(mailOptions, function(error, response){

@@ -16,6 +16,7 @@ var CONSTS = {
 	USER_TYPE_REGULAR  : '2',
 	USER_TYPE_ADMIN    : '1',
 
+	MAIL_REGISTER_PAGE: 'register_finish.html',
 	MAIL_PROTOCOL: 'SMTP',
 	MAIL_SERVICE : 'Gmail',
 	MAIL_HOST: 'smtp.gmail.com',
