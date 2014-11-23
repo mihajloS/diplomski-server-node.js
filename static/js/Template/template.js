@@ -1,13 +1,13 @@
 var MTemplate = {
 	i18n_welcome_text: 'Welcome #USER#',
 
-	SERVER: 'http://localhost',
+	//SERVER: 'http://192.168.0.107:3000',
 	_socket: null,
 	_loggedIn: false,
 
 	initSocketObject: function () {
 		initMApp();
-		MTemplate._socket = io.connect(MTemplate.SERVER);
+		MTemplate._socket = io();
 		MTemplate._socket.on('sess', function(message) {
 			console.log('sess message', message);
 			if (message===null || !('loggedin' in message))
@@ -52,6 +52,7 @@ var MTemplate = {
 		MTemplate._socket.emit('getNav', cb);
 	},
 	onSessionCallback: function (message) {
+		console.log('d(-_-)b >> session message', message);
 		MEvents.fire('session', message);
 	},
 	changeLoginButtonsState: function(data) {

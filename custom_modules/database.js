@@ -4,13 +4,10 @@ var configuration  = require('./configuration');
 var mail           = require('./mailer_m');
 //native modules
 var mysql        = require('mysql');
-var cookieParser = require('cookie-parser')
-var cookie       = require('cookie');
 
 var CONSTS = configuration.get();
 var connection;
 var socketServer;
-var myStore;
 var SES;
 
 
@@ -36,7 +33,7 @@ function handleSocketCalls(ss) {
 	socketServer.on('connection', function(socket) {
 		var stat = SES.checkSession(socket);
 		socket.emit('sess', stat);
-		m.traceText('Socket new connection');
+		//m.traceText('Socket new connection');
 		socket.on('getNav', function(cb) {
 			getNavigation(socket, cb);
 		});
@@ -58,8 +55,11 @@ function handleSocketCalls(ss) {
 		socket.on('sendContactData', function  (data, cb) {
 			sendContactData(socket, data, cb);
 		});
+		socket.on('getPeople', function(data, cb) {
+			getPeople(socket, data, cb);
+		});
 		socket.on('disconnect', function() {
-			console.log('disc', socket.id);
+			SES.killSocket(socket);
 		});
 	});
 }
@@ -128,7 +128,9 @@ function registerNewUser(socket, data, cb) {
 						query = 'INSERT INTO userstotypes (user_id, type_id) VALUES ("' + last_id + '", "' + CONSTS.USER_TYPE_REGULAR + '")';
 						connection.query(query, function(err, rows, fields) {
 							if (err)
+							{
 								m.errorResponce(null, cb, 'Registration error level 1');
+							}
 							else {
 								m.successResponce(null, cb, 'Registation success');
 								if (!CONSTS.DEVELOPMENT) {
@@ -206,6 +208,40 @@ function sendContactData (socket, data , cb) {
 			m.successResponce(null, cb, 'Message sent with success.');
 		}
 	});
+}
+
+function getPeople(socket, data, cb) {
+	var session = SES.getSessionForSocket(socket);
+	if (!session.connected) 
+		return m.errorResponce(null, cb, 'You are not authorised for this request');
+
+	var sessions = SES.getSessions();
+	var ret = {};
+	for (var sid in sessions) {
+		if (!('user_data' in sessions[sid]) || (sessions[sid].user_data === null) || !('user_id' in sessions[sid].user_data)) continue;
+		if (sessions[sid].user_data.user_id == session.user_data.user_id) continue;
+		ret[sessions[sid].user_data.user_id] = sessions[sid].user_data;
+	}
+	m.successResponce(ret, cb, 'Got people with success');
+}
+
+function addAvatar(req, res, filename, cb) {
+
+	var session = SES.getSessionByReq(req);
+	if ((session===null) || !(session.connected))
+		cb(false);
+
+	var query = "UPDATE `users` SET `image` = '" + filename + "' WHERE `user_id` = " + parseInt(session.user_data.user_id);
+	connection.query(query, function(err, rows, fields) {
+		console.log('d(-_-)b >> rows', rows);
+		if (err || (rows===null) || !('affectedRows' in rows) || (rows.affectedRows!='1'))
+			return cb(false);
+		session.user_data.image = filename;
+		var success = SES.updateSesssionUserData(session, session.user_data);
+		return cb(success);
+	});
+
+//	cb(true);
 
 }
 
@@ -222,3 +258,4 @@ function getNavigation (socket, cb) {
 }
 
 exports.init = init;
+exports.addAvatar = addAvatar;

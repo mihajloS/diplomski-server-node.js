@@ -89,5 +89,62 @@ li.bg, .bg {  clear:both; border-top:1px solid #f2f2f2; width:100%; padding:0; m
 #slider_controls ul li a:hover,
 #slider_controls ul li a.activeSlide { background:url('images/tabs_1.gif') no-repeat center center; }
 /*************mihajlo**********/
+
 .btnSend{ background-image: url('images/send.gif'); background-repeat: no-repeat; width: 81px; height: 32px; padding: 0; margin: 0;}
 input.btnSend:hover { cursor: pointer; cursor: hand; }
+
+#mProfileTable {
+	margin: 0 auto;
+	//border:1px solid #CCC;
+}
+#mProfileTable tr {
+	//border-bottom: 1px solid #CCC;
+}
+#mProfileTable td {
+	margin-top: 200px;
+	border-bottom:1px solid #CCC;
+	vertical-align:bottom;
+	//text-align:center;
+}
+.myButton {
+	-moz-box-shadow:inset 0px 1px 0px 0px #dcecfb;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #dcecfb;
+	box-shadow:inset 0px 1px 0px 0px #dcecfb;
+	background-color:#bddbfa;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #84bbf3;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:arial;
+	font-size:13px;
+	font-weight:bold;
+	padding:3px 15px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #528ecc;
+}
+.myButton:hover {
+	background-color:#80b5ea;
+}
+.myButton:active {
+	position:relative;
+	top:1px;
+}
+
+#mPeopleWrapper {
+	text-align: center;
+}
+.mPerson {
+	margin: 25px;
+	float: left;
+	width: auto;
+	height: 210px;
+	padding:2px;
+	border:1px solid #CCC;
+}
+.mPerson img {
+	position: relative;
+	height: 150px;
+}
