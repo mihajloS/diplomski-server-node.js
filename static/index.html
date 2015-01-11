@@ -41,12 +41,12 @@ $(document).ready(function () {
           <li><a href="contact.html"><span> Contact Us</span></a></li> -->
         </ul>
       </div>
-     <div >
-        <p id="title_welcome" style="display:none;">Welcome #USER#</p>
-        <input type="text" style='display:none;' id="tb_email" value="" placeholder="Email" />
-        <input type="password" style='display:none;' value="" id="tb_password" placeholder="Password" />
-        <input type="button" style='display:none;' id="btn_login" value="Log In" onClick="MTemplate.onLoginClick()" />
-        <input type="button" style='display:none;' id="btn_logout" value="Log out" onClick="MTemplate.onLogoutClick();" />
+     <div>
+        <p id="title_welcome" class="displayNone" >Welcome #USER#</p>
+        <input type="text"    class="displayNone" id="tb_email" value="" placeholder="Email" />
+        <input type="password"class="displayNone" value="" id="tb_password" placeholder="Password" />
+        <input type="button"  class="displayNone myButton" id="btn_login" value="Log In" onClick="MTemplate.onLoginClick()"  />
+        <input type="button"  class="displayNone myButton" id="btn_logout" value="Log out" onClick="MTemplate.onLogoutClick();" />
       </div>
       <div class="clr"></div>
     </div>

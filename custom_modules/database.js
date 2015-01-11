@@ -1,6 +1,6 @@
 //custom modules
 var m              = require('./helpers');
-var configuration  = require('./configuration');
+var configuration  = require('../static/js/Configuration/configuration.js');
 var mail           = require('./mailer_m');
 //native modules
 var mysql        = require('mysql');
@@ -58,10 +58,21 @@ function handleSocketCalls(ss) {
 		socket.on('getPeople', function(data, cb) {
 			getPeople(socket, data, cb);
 		});
+		socket.on('sendChatMessage', function(data, cb) {
+			sendChatMessage(socket, data, cb);
+		})
 		socket.on('disconnect', function() {
+			var session = SES.getSessionForSocket(socket)
+			if (session !== null && ('user_data' in session) && (session.user_data !== null) && ('user_id' in session.user_data))
+				tellOthers(socket, false, session.user_data.user_id);
 			SES.killSocket(socket);
 		});
 	});
+}
+
+//handle offline status, this is only handling online
+function tellOthers(socket, loggedIn, id) {
+	socket.broadcast.emit('userTracker', {id: id, loggedIn: loggedIn});
 }
 
 //////////////////////
@@ -81,6 +92,7 @@ function logIn (socket, data, cb) {
 			SES.buildSession(socket);
 			SES.setConnection(socket, true, rows[0]);
 			m.successResponce(rows[0], cb, 'Authorisation success');
+			tellOthers(socket, true, rows[0].user_id);
 		}
 		else if(rows.length < 1){
 			m.errorResponce(null, cb, 'Authorisation error');
@@ -92,6 +104,9 @@ function logIn (socket, data, cb) {
 }
 
 function logOut(socket) {
+	var session = SES.getSessionForSocket(socket);
+	if ((session !== null) && ('user_data' in session) && (session.user_data !== null) && ('user_id' in session.user_data))
+		tellOthers(socket, false, session.user_data.user_id);
 	SES.kill(socket);
 }
 
@@ -212,7 +227,7 @@ function sendContactData (socket, data , cb) {
 
 function getPeople(socket, data, cb) {
 	var session = SES.getSessionForSocket(socket);
-	if (!session.connected) 
+	if ((session == null) || (!session.connected)) 
 		return m.errorResponce(null, cb, 'You are not authorised for this request');
 
 	var sessions = SES.getSessions();
@@ -223,6 +238,33 @@ function getPeople(socket, data, cb) {
 		ret[sessions[sid].user_data.user_id] = sessions[sid].user_data;
 	}
 	m.successResponce(ret, cb, 'Got people with success');
+}
+
+function sendChatMessage(socket, data, cb) {
+	if (!('to' in data) || !('text' in data))
+		return m.errorResponce(null, cb, 'Bad parameters sent');
+	console.log('>> incoming', data);
+	var to = parseInt(data.to);
+	var text = data.text;
+	var session = SES.getSessionForSocket(socket);
+	if (!session.connected)
+		return m.errorResponce(null, cb, 'You are not logged in');
+	console.log('from session', session);
+	var sessions = SES.getSessions();
+	var singleSocket;
+	for (var sid in sessions) {
+		if (!('user_data' in sessions[sid]) || (sessions[sid].user_data === null) || !('user_id' in sessions[sid].user_data)) continue;
+		if (sessions[sid].user_data.user_id == to) {
+			for (var socID in sessions[sid].sockets) {
+				debugger;
+				singleSocket = sessions[sid].sockets[socID];
+				singleSocket.emit('onChatMessage', {from: session.user_data.user_id, text: text});
+			}
+			return m.successResponce(null, cb, 'Message sent');
+		}
+	}
+
+	return m.errorResponce(null, cb, 'No such user');
 }
 
 function addAvatar(req, res, filename, cb) {

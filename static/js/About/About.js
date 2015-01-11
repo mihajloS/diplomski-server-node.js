@@ -38,6 +38,7 @@ function events_listener_logout(data) {
 //RTC
 
 function my_init() {
+	easyrtc.setSocketUrl(":3000")
 	easyrtc.setRoomOccupantListener(onRoomJoinListener);
 	easyrtc.easyApp(TEST_ROOM_ID, "self", ["caller"], onInitialize);
 	$( ".av" ).toggle('slow');
@@ -50,6 +51,7 @@ function onInitialize (myID) {
 }
 
 function onRoomJoinListener(roomName, peerIds) {
+	debugger;
 	console.log(roomName, 'has changes:');
 	console.log(peerIds);
 	var otherClientDiv = document.getElementById('otherClients');

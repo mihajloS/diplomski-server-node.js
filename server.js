@@ -14,7 +14,7 @@
 ╚═╝     ╚═╝   ╚═╝       ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝           
 */
 //custom modules
-var configuration  = require('./custom_modules/configuration');
+var configuration  = require('./static/js/Configuration/configuration.js');
 var m              = require('./custom_modules/helpers');
 var mysql          = require('./custom_modules/database');
 var SES            = require('./custom_modules/session_m');
@@ -28,7 +28,8 @@ var io             = require('socket.io');
 var easyrtc        = require('easyrtc');
 var path           = require('path');
 var busboy         = require('connect-busboy');
-var RedisStore = require('connect-redis')(express_session);
+var RedisStore     = require('connect-redis')(express_session);
+var sys            = require('sys');
 
 var CONSTS = configuration.get();
 var express_session_store = new RedisStore();
@@ -37,6 +38,7 @@ var app = express();
 /**
  * Initial configuration of server
  */
+sys.puts(configuration.get());
 app.use(express_session({ secret: 'mijajlo', saveUninitialized: true, resave: true }));
 app.use(express.static(path.join(__dirname, 'static')));
 app.set('view engine', 'html');
@@ -50,6 +52,7 @@ app.use(busboy());
 /**
  * Handle secure static pages requests
  */
+
 app.get('/admin.html', function(req, res) {
 	var cid = req.cookies['connect.sid'];
 	var sessions = SES.getSessions();
@@ -70,7 +73,6 @@ app.get('/admin.html', function(req, res) {
 })
 
 app.get('/downloadAvatar/:imagePath', function(req, res) {
-	console.log('image path', req.params['imagePath']);
 	fileUpload.avatarDownload(req, res);
 });
 
@@ -101,7 +103,7 @@ app.post('/uploadAvatar', function (req, res) {
  * Start listening on port 
  */
 var webServer = http.createServer(app).listen(CONSTS.SERVER_PORT, function() {
-	m.traceText('Server is listening on ' + CONSTS.SERVER_IP + ':' + CONSTS.SERVER_PORT);
+	m.traceText('Server is listening on ' + webServer.address().address + ':' + webServer.address().port);
 });
 
 /**

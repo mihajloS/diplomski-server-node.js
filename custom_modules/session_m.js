@@ -1,6 +1,6 @@
 //custom modules
 var m             = require('./helpers');
-var configuration = require('./configuration');
+var configuration = require('../static/js/Configuration/configuration.js');
 //native modules
 var cookie = require('cookie');
 
@@ -126,7 +126,13 @@ function buildCheckMessage(type, message) {
 
 function getSIDFromSocket (s) {
 	var cookie_string = s.request.headers.cookie;
-	var parsed_cookies = cookie.parse(cookie_string);
+	try {
+		var parsed_cookies = cookie.parse(cookie_string);
+	}
+	catch (e) {
+		m.traceText('error code ' + e.message);
+		return null;
+	}
 	return parsed_cookies['connect.sid'];
 }
 

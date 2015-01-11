@@ -3208,6 +3208,7 @@ easyrtc.connect = function(applicationName, successCallback, errorCallback) {
     function connectToWSServer(successCallback, errorCallback) {
         var i;
         if (!easyrtc.webSocket) {
+            //debugger;
             easyrtc.webSocket = io.connect(easyrtc.serverPath, {
                 'connect timeout': 10000,
                 'force new connection': true
@@ -3252,7 +3253,8 @@ easyrtc.connect = function(applicationName, successCallback, errorCallback) {
 
             easyrtc.webSocketConnected = true;
             if (!easyrtc.webSocket || !easyrtc.webSocket.socket || !easyrtc.webSocket.socket.sessionid) {
-                easyrtc.showError(easyrtc.errCodes.CONNECT_ERR, easyrtc.constantStrings.badsocket);
+                //debugger;
+                //easyrtc.showError(easyrtc.errCodes.CONNECT_ERR, easyrtc.constantStrings.badsocket);
             }
 
             if (easyrtc.debugPrinter) {

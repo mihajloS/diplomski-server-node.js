@@ -10,6 +10,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script type="text/javascript" src="js/Template/template.js"></script>
 <script type="text/javascript" src="js/Profile/Profile.js"></script>
+<script type="text/javascript" src="js/Configuration/configuration.js"></script>
 
 </head>
 <body onLoad='MTemplate.initSocketObject();'>
@@ -27,20 +28,16 @@
 					<li><a href="contact.html"><span> Contact Us</span></a></li> -->
 				</ul>
 			</div>
-			<div >
-				<p id="title_welcome" style="display:none;">Welcome #USER#</p>
-				<input type="text" style='display:none;' id="tb_email" value="" placeholder="Email" />
-				<input type="password" style='display:none;' value="" id="tb_password" placeholder="Password" />
-				<input type="button" style='display:none;' id="btn_login" value="Log In" onClick="MTemplate.onLoginClick()" class="myButton"  />
-				<input type="button" style='display:none;' id="btn_logout" value="Log out" onClick="MTemplate.onLogoutClick();"  class="myButton"  />
+			<div>
+				<p id="title_welcome" class="displayNone" >Welcome #USER#</p>
+				<input type="text"    class="displayNone" id="tb_email" value="" placeholder="Email" />
+				<input type="password"class="displayNone" value="" id="tb_password" placeholder="Password" />
+				<input type="button"  class="displayNone myButton" id="btn_login" value="Log In" onClick="MTemplate.onLoginClick()"  />
+				<input type="button"  class="displayNone myButton" id="btn_logout" value="Log out" onClick="MTemplate.onLogoutClick();" />
 			</div>
 			<div class="clr"></div>
 		</div>
 		<div class="clr"></div>
-		<h3>Services</h3>
-			<div class="right_text">
-				<p><strong>Latest News:</strong> Dipisicing elit, sed do eiusmod tempor incididunt ut labore et?</p>
-			</div>
 			<div class="clr"></div>
 
 			<div id="mProfileWrapper">

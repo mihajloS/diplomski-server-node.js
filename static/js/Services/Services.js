@@ -1,53 +1,103 @@
-var TEST_ROOM_ID = "About_test_tour";
+var _server;      // server ip
+var _peopleWrap;  // wrapper div
 
 function events_listener_session (session) {
 	MTemplate.changeLoginButtonsState(session.data);
+	MTemplate.listen('onChatMessage', onChatMessageListener);
+	MTemplate.listen('userTracker', onUserChangeListener);
+	MTemplate.sendRequest('getPeople', null, callback_getPeople);
+	initRtc(session);
+}
+
+function onUserChangeListener(data) {
 	MTemplate.sendRequest('getPeople', null, callback_getPeople);
 }
 
-function callback_getPeople (data) {
-	var peopleWrap = $('#mPeopleWrapper');
-	var people = data.data;
+function showHistory(person) {
+	if (!(person.user_id in _chatHistory)) return;
 
-	var person;
-	for (var item in people) {
-		person = people[item];
-		$(peopleWrap).append('' +
-		'<div class="mPerson">' +
-			'<img src="http://mihajlo.com:3000/downloadAvatar/' + person.image + '"><br/>' +
-			'<span>Nickname:</span><span>' + person.nickname + '</span><br/>' +
-			'<span>/chat/</span><span>/call/</span>' +
-		'</div>');
+	var textArea = $('#tb_message');
+	textArea.val('');
+	var message;
+	for (var i = 0; i < _chatHistory[person.user_id].length; i++) {
+		message = _chatHistory[person.user_id][i];
+		message = person.nickname + ': ' + message ;
+		if ((i+1) != _chatHistory[person.user_id].length)
+			message = message + '\n';
+		textArea.val(textArea.val() + message);
 	}
-	for (var item in people) {
-		person = people[item];
-		$(peopleWrap).append('' +
-		'<div class="mPerson">' +
-			'<img src="http://mihajlo.com:3000/downloadAvatar/' + person.image + '"><br/>' +
-			'<span>Nickname:</span><span>' + person.nickname + '</span><br/>' +
-			'<span>/chat/</span><span>/call/</span>' +
-		'</div>');
+}
+
+function sendTextMessage () {
+	var chatInputText = $('#tbChatMessage').val();
+	if ($.trim(chatInputText).length===0) return;
+	var to = personIDGen($('.mChatView').attr('lang'), true);
+	MTemplate.sendRequest('sendChatMessage', {to: to, text: chatInputText}, callback_sendChatMessages);
+	$('#tbChatMessage').val('');
+	var textArea = $('#tb_message');
+	var prefix = '\nMe: ';
+	if (textArea.val().length===0)
+		prefix = 'Me: ';
+	chatInputText = prefix + chatInputText;
+	textArea.val(textArea.val() + chatInputText);
+	scrollBottom();
+}
+
+function callback_sendChatMessages(data) {
+	console.log('message sent maybe', data);
+}
+
+function scrollBottom() {
+	var textArea = $('#tb_message');
+	textArea.scrollTop(textArea[0].scrollHeight);
+}
+
+function personIDGen(ID, get) {
+	if (get)
+		return ID.split('_')[1];
+	return 'person_' + ID;
+}
+
+var _chatHistory = {};
+
+function addMessageToHistory(from, text) {
+	if (!(from.user_id in _chatHistory))
+		_chatHistory[from.user_id] = [];
+	_chatHistory[from.user_id].push(text);
+}
+
+function onChatMessageListener(data) {
+	console.log('onChatMessageListener', data);
+	var from = _people[data.from];
+	if (from===undefined) return;
+
+	addMessageToHistory(from, data.text);
+
+	console.log('d(-_-)b >> disppppp', $(".mChatView").css('display'));
+	if ($(".mChatView").css('display') === 'none') {
+		var messaegText = from.nickname + ' says: ' + data.text;
+		noty({
+			text: messaegText,
+			layout: 'topRight',
+			modal: false,
+			type: 'information',
+			killer: true,
+			closeWith: ['click'],
+			callback: {
+				onCloseClick: function(e) {
+					debugger;
+					var person_id = personIDGen(data.from);
+					$(_peopleWrap).find('#' + person_id).find('.action_chat').click();
+					$.noty.closeAll();
+				}
+			}
+		});
 	}
-	for (var item in people) {
-		person = people[item];
-		$(peopleWrap).append('' +
-		'<div class="mPerson">' +
-			'<img src="http://mihajlo.com:3000/downloadAvatar/' + person.image + '"><br/>' +
-			'<span>Nickname:</span><span>' + person.nickname + '</span><br/>' +
-			'<span>/chat/</span><span>/call/</span>' +
-		'</div>');
+	else {
+		var textArea = $('#tb_message');
+		textArea.val(textArea.val() + '\n' + from.nickname + ': ' + data.text);
+		scrollBottom();
 	}
-	for (var item in people) {
-		person = people[item];
-		$(peopleWrap).append('' +
-		'<div class="mPerson">' +
-			'<img src="http://mihajlo.com:3000/downloadAvatar/' + person.image + '"><br/>' +
-			'<span>Nickname:</span><span>' + person.nickname + '</span><br/>' +
-			'<span>/chat/</span><span>/call/</span>' +
-		'</div>');
-	}
-	
-	console.log('d(-_-)b >> getPeople responce', data);
 }
 
 function events_listener_nav (data) {
@@ -74,71 +124,22 @@ function events_listener_login (data) {
 			});
 	}
 	MTemplate.changeLoginButtonsState(data.data);
+	MTemplate.sendRequest('getPeople', null, callback_getPeople);
+
 }
 
 function events_listener_logout(data) {
 	MTemplate.changeLoginButtonsState(data);
-}
-
-
-//RTC
-
-function my_init() {
-	easyrtc.setRoomOccupantListener(onRoomJoinListener);
-	easyrtc.easyApp(TEST_ROOM_ID, "self", ["caller"], onInitialize);
-	$( ".av" ).toggle('slow');
-}
-
-function onInitialize (myID) {
-	console.log("My easyrtcid is " + myID);
-	console.log(easyrtc.events);
-	
-}
-
-function onRoomJoinListener(roomName, peerIds) {
-	console.log(roomName, 'has changes:');
-	console.log(peerIds);
-	var otherClientDiv = document.getElementById('otherClients');
-	//remove all old participants
-	while (otherClientDiv.hasChildNodes()) {
-		otherClientDiv.removeChild(otherClientDiv.lastChild);
-	}
-	//now add new with click call events on them
-	for(var i in peerIds) {
-		var button = document.createElement('button');
-		button.onclick = function(easyrtcid) {
-			return function() {
-				performCall(easyrtcid);
-			}
-		}(i);
-
-		label = document.createTextNode(i);
-		button.appendChild(label);
-		otherClientDiv.appendChild(button);
-	}
-}
-
-function performCall(easyrtcid) {
-	easyrtc.call(easyrtcid, onCallSuccess, onCallError, onCallAccepted);
-}
-
-function onCallSuccess(easyrtcID) {
-	console.log("completed call to " + easyrtcID);
-}
-
-function onCallError(errorMessage) {
-	console.log("err:" + errorMessage);
-}
-
-function onCallAccepted(accepted, bywho) {
-	console.log((accepted?"accepted":"rejected")+ " by " + bywho);
+	_peopleWrap.html('');
 }
 
 function initMApp () {
+	_peopleWrap = $('#mPeopleWrapper');
 	MEvents.subscribe('session', events_listener_session);
 	MEvents.subscribe('nav', events_listener_nav);
 	MEvents.subscribe('login', events_listener_login);
 	MEvents.subscribe('logout', events_listener_logout);
+	_server = configuration.serverAddress();
 
 	$('#tb_password').bind('keyup', function(e) {
 		if (e.keyCode===13) MTemplate.onLoginClick();
@@ -159,30 +160,4 @@ function initMApp () {
 		});
 
 	})
-
-	$('#fileUploadFileSelect').on('change', function(e) {
-		var files = $(this).prop('files');
-		sendUploadRequest(files[0]);
-	});
-}
-
-function sendUploadRequest (file) {
-	var formData = new FormData();
-	formData.append('Filedata', file, file.name);
-
-	var request = $.ajax({
-		type:'POST',
-		url: 'http://192.168.189.128:3000/uploadAvatar',
-		data:formData,
-		cache:false,
-		contentType: false,
-		contentLength: file.size,
-		processData: false,
-		success:function(data, textStatus, jqXHR) {
-			console.log('d(-_-)b >> success data', data);
-		},
-		error: function(data) {
-			console.log('d(-_-)b >> error data', data);
-		}
-	});
 }

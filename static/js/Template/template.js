@@ -4,6 +4,7 @@ var MTemplate = {
 	//SERVER: 'http://192.168.0.107:3000',
 	_socket: null,
 	_loggedIn: false,
+	_session: null,
 
 	initSocketObject: function () {
 		initMApp();
@@ -14,9 +15,15 @@ var MTemplate = {
 				console.log('Server session error');
 			else
 				MTemplate._loggedIn = message.loggedin;
+			MTemplate._session = message;
 			MEvents.fire('session', message);
 		});
 		MTemplate.getNav(MTemplate.onNavCallback);
+	},
+	listen: function(listerName, cb) {
+		MTemplate._socket.on(listerName, function(data) {
+			cb(data);
+		});
 	},
 	sendRequest: function(req_name, data, cb) {
 		MTemplate._socket.emit(req_name, data, cb);
@@ -50,6 +57,15 @@ var MTemplate = {
 	},
 	getNav: function (cb) {
 		MTemplate._socket.emit('getNav', cb);
+	},
+	getSeid: function () {
+		if (MTemplate._session === null)
+			return null;
+		if (!('data' in MTemplate._session))
+			return null;
+		if (!('user_id' in MTemplate._session.data))
+			return null;
+		return MTemplate._session.data.user_id;
 	},
 	onSessionCallback: function (message) {
 		console.log('d(-_-)b >> session message', message);

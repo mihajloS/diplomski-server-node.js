@@ -1,4 +1,5 @@
 var TEST_ROOM_ID = "About_test_tour";
+var _server;
 
 function events_listener_session (session) {
 	MTemplate.changeLoginButtonsState(session.data);
@@ -6,7 +7,7 @@ function events_listener_session (session) {
 	console.log('d(-_-)b >> session', session);
 	var userData = session.data;
 	$('#mEmail').val(userData.email);
-	$('#mImage').prop('src', 'http://mihajlo.com:3000/downloadAvatar/' + userData.image);
+	$('#mImage').prop('src', 'http://' + _server + '/downloadAvatar/' + userData.image);
 	$('#mNickname').val(userData.nickname);
 }
 
@@ -100,6 +101,7 @@ function initMApp () {
 	MEvents.subscribe('nav', events_listener_nav);
 	MEvents.subscribe('login', events_listener_login);
 	MEvents.subscribe('logout', events_listener_logout);
+	_server = configuration.serverAddress();
 
 	$('#tb_password').bind('keyup', function(e) {
 		if (e.keyCode===13) MTemplate.onLoginClick();
@@ -133,7 +135,7 @@ function sendUploadRequest (file) {
 
 	var request = $.ajax({
 		type:'POST',
-		url: 'http://mihajlo.com:3000/uploadAvatar',
+		url: 'http://' + _server + '/uploadAvatar',
 		data:formData,
 		cache:false,
 		contentType: false,
@@ -141,7 +143,7 @@ function sendUploadRequest (file) {
 		processData: false,
 		success:function(data, textStatus, jqXHR) {
 			if (data!=='false')
-				$('#mImage').prop('src', 'http://mihajlo.com:3000/downloadAvatar/' + data);
+				$('#mImage').prop('src', 'http://' + _server + '/downloadAvatar/' + data);
 		},
 		error: function(data) {
 			console.log('d(-_-)b >> error data', data);

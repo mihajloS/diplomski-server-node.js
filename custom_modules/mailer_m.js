@@ -1,5 +1,5 @@
 //custom modules
-var configuration = require('./configuration');
+var configuration = require('../static/js/Configuration/configuration.js');
 //native modules
 var nodemailer = require("nodemailer");
 
